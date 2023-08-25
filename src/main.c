@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "window.h"
+#include <window.h>
 
 int main(void)
 {
