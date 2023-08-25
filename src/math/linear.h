@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "../test.h"
+#include <test.h>
 
 typedef float vec2[2];
 typedef float vec3[3];
@@ -18,10 +18,5 @@ float vec3_dot(vec3 a, vec3 b);
 float vec4_dot(vec4 a, vec4 b);
 
 void vec3_cross(vec3 dest, vec3 a, vec3 b);
-
-int vec2_dot_test();
-int vec3_dot_test();
-int vec4_dot_test();
-int vec3_cross_test();
 
 #endif

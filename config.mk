@@ -1,7 +1,7 @@
 # Compiler settings
 CC:=cc
-CFLAGS:=-Wall -Wextra -pedantic -O3 -std=c99
-DEBUG_CFLAGS:=-Wall -Wextra -pedantic -g -std=c99
+CFLAGS:=-Wall -Wextra -pedantic -O3 -std=c99 -I./src
+CFLAGS_DEBUG:=-Wall -Wextra -pedantic -g -std=c99 -I./src
 
 # Linker settings
 OPENGL_LIBS=-lGL
