@@ -1,5 +1,8 @@
 # object files
 *.o
 
+# valgrind logs
+vgcore.*
+
 # dist files
 bin/
