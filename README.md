@@ -4,4 +4,4 @@
 
 ## bitrodos
 
-bitrodos is a free and opensource 2D RPG game with a procedurally generated world to explore.
+bitrodos is a free and opensource 3D blocks game with procedurally generated worlds.
