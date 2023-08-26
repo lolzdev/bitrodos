@@ -158,3 +158,21 @@ void vec4_normalize(vec4 dest, vec4 a)
     res[3] /= w;
     memcpy(dest, res, sizeof(vec4));
 }
+
+void vec2_scale(vec2 dest, vec2 a, float scale)
+{
+    memcpy(dest, a, sizeof(vec2));
+    for (int i=0; i<2; i++) dest[i] *= scale;
+}
+
+void vec3_scale(vec3 dest, vec3 a, float scale)
+{
+    memcpy(dest, a, sizeof(vec3));
+    for (int i=0; i<3; i++) dest[i] *= scale;
+}
+
+void vec4_scale(vec4 dest, vec4 a, float scale)
+{
+    memcpy(dest, a, sizeof(vec4));
+    for (int i=0; i<4; i++) dest[i] *= scale;
+}

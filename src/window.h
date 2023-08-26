@@ -5,6 +5,9 @@
 #include <core.h>
 #include <GLFW/glfw3.h>
 #include <log.h>
+#include <rendering/renderer.h>
+#include <math/linear.h>
+#include <input.h>
 
 GLFWwindow *create_window(char *title, uint64_t width, uint64_t height);
 void update_window(GLFWwindow *window);

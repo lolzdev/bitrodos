@@ -2,9 +2,11 @@
 #define RENDERER_H
 
 #include <glad/gl.h>
+#include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <string.h>
 #include <log.h>
+#include <camera.h>
 
 typedef struct mesh {
     uint32_t vbo, vao, ebo;
@@ -18,6 +20,9 @@ typedef struct meshes {
 typedef struct render_state {
     uint32_t shader;
     meshes_t *meshes;
+    camera_t *camera;
+    mat4 perspective;
+    float delta_time;
 } render_state_t;
 
 extern render_state_t RENDER_STATE;

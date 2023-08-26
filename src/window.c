@@ -4,6 +4,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     UNUSED(window);
     glViewport(0, 0, width, height);
+    mat4_perspective(RENDER_STATE.perspective, RAD(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 }
 
 GLFWwindow *create_window(char *title, uint64_t width, uint64_t height)
@@ -19,6 +20,7 @@ GLFWwindow *create_window(char *title, uint64_t width, uint64_t height)
     window = glfwCreateWindow((int)width, (int)height, title, NULL, NULL);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     CRITICAL_ASSERT("Could not create the main window!", window);
 
@@ -44,6 +46,7 @@ int should_close(GLFWwindow *window)
 void update_window(GLFWwindow *window)
 {
     glfwPollEvents();
+    process_input(window);
     glfwSwapBuffers(window);
 }
 

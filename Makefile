@@ -8,6 +8,7 @@ SRC:=src/main.c \
 	 src/gl.c \
 	 src/assets.c \
 	 src/camera.c \
+	 src/input.c \
 	 src/math/linear.c \
 	 src/rendering/renderer.c
 OBJ:=$(SRC:.c=.o)

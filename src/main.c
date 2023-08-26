@@ -9,6 +9,12 @@ int main(void)
     GLFWwindow *window = create_window("bitrodos", 800, 600);
 
 
+    camera_t *camera = malloc(sizeof(camera_t));
+    vec3 position = {0.0f, 0.0f, 2.0f};
+    camera_create(camera, position, -90.0f, 0.0f);
+    RENDER_STATE.camera = camera;
+    mat4_perspective(RENDER_STATE.perspective, RAD(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+
     mesh_t triangle;
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
@@ -36,6 +42,7 @@ int main(void)
 
     info("Exiting");
 
+    free(camera);
     destroy_meshes(meshes);
     destroy_window(window);
     return EXIT_SUCCESS;

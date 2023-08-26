@@ -1,10 +1,23 @@
 #include <rendering/renderer.h>
 
 render_state_t RENDER_STATE;
+static float last_frame = 0.0f;
 
 void render_loop()
 {
+    float current = (float) glfwGetTime();
+    RENDER_STATE.delta_time = current - last_frame;
+    last_frame = current;
+
     glUseProgram(RENDER_STATE.shader);
+
+    uint32_t perspective_location = glGetUniformLocation(RENDER_STATE.shader, "perspective");
+    uint32_t view_location = glGetUniformLocation(RENDER_STATE.shader, "view");
+    glUniformMatrix4fv(perspective_location, 1, 1, RENDER_STATE.perspective[0]);
+    mat4 view = {0};
+    camera_view_matrix(RENDER_STATE.camera, view);
+    glUniformMatrix4fv(view_location, 1, 1, view[0]);
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
