@@ -7,6 +7,9 @@
 #include <string.h>
 #include <log.h>
 #include <camera.h>
+#include <stdlib.h>
+#include <string.h>
+#include <log.h>
 
 typedef struct mesh {
     uint32_t vbo, vao, ebo;

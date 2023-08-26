@@ -2,6 +2,8 @@
 
 void camera_create(camera_t *dest, vec3 position, float yaw, float pitch)
 {
+    if (!dest) dest = (camera_t *) malloc(sizeof(camera_t));
+    
     vec3 front = {0.0f, 0.0f, -1.0f};
     vec3 up = {0.0f, 1.0f, 0.0f};
     vec3 right = {0};

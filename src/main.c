@@ -8,7 +8,6 @@ int main(void)
 {
     GLFWwindow *window = create_window("bitrodos", 800, 600);
 
-
     camera_t *camera = malloc(sizeof(camera_t));
     vec3 position = {0.0f, 0.0f, 2.0f};
     camera_create(camera, position, -90.0f, 0.0f);
