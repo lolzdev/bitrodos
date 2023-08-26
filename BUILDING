@@ -1,0 +1,10 @@
+To compile this software you need:
+    - a C99 compiler (gcc, clang)
+    - the GLFW library installed on your system
+    - the lua library installed on your system
+    - GNU make installed on your system
+
+If all the requirements are met, you can then use GNU make to build the software by just running the `make` command.
+The resulting binaries can be found in the `bin` folder.
+
+NOTE: the game must be run in a directory that contains also the `assets` directory or the necessary files will not be found!
