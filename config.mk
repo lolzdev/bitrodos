@@ -9,5 +9,7 @@ OPENGL_LIBS=-lGL
 GLFW_LIBS=-lglfw -lrt -lm -ldl -lX11 -lpthread -lxcb -lXau -lXdmcp
 ## Dynamic
 GLFW_LIBS_DYNAMIC=-lglfw
+# Lua library
+LUA_LIBS=-llua
 
 BIN_DIR:=bin
