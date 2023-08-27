@@ -29,7 +29,7 @@ void render_loop(state_t *state)
 
     while (list) {
         glBindVertexArray(list->mesh->vao);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0); 
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
         glBindVertexArray(0);
         list = list->next;
     }

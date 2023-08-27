@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <mods.h>
 #include <stdlib.h>
 #include <window.h>
@@ -6,6 +8,8 @@
 int main(void)
 {
     state_t state = {0};
+    state.texture_count = 0;
+    state.atlas_count = 0;
 
     state.resize_hooks = (hook_node_t *) malloc(sizeof(hook_node_t)); 
     state.resize_hooks->ref = LUA_NOREF;
@@ -30,14 +34,16 @@ int main(void)
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f 
+        0.5f,  0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f
     };
 
     uint32_t indices[] = {
-        0, 1, 2
+        0, 1, 2,
+        2, 3, 0
     };
 
-    create_mesh(&triangle, vertices, 9, indices, 3);
+    create_mesh(&triangle, vertices, 12, indices, 6);
     meshes_t *meshes = NULL;
     meshes = push_mesh(meshes, triangle);
 

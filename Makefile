@@ -9,10 +9,12 @@ SRC:=src/main.c \
 	 src/assets.c \
 	 src/camera.c \
 	 src/input.c \
+	 src/hash.c \
 	 src/mods.c \
 	 src/math/linear.c \
 	 src/rendering/renderer.c \
 	 src/rendering/lua.c
+
 OBJ:=$(SRC:.c=.o)
 OBJ_TEST:=$(OBJ:src/main.o=)
 

@@ -9,6 +9,16 @@
 
 #define UNUSED(x) (void)(x)
 
+typedef struct {
+    uint64_t hash;
+    float *uvs; 
+} block_texture_pair;
+
+typedef struct {
+    uint64_t hash;
+    uint32_t atlas;
+} block_atlas_pair;
+
 typedef struct mesh {
     uint32_t vbo, vao, ebo;
 } mesh_t;
@@ -42,9 +52,13 @@ typedef struct state {
     hook_node_t *tick_hooks;
     hook_node_t *resize_hooks;
 
+    block_texture_pair *block_textures;
+    block_atlas_pair *block_atlases;
+
     lua_State *L;
 
     meshes_t *meshes;
+    size_t texture_count, atlas_count;
     float delta_time;
 } state_t;
 
