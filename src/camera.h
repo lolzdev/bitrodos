@@ -16,6 +16,22 @@ void camera_move(camera_t *camera, direction_t direction, float delta_time);
 void camera_rotate(camera_t *camera, float delta_x, float delta_y);
 void camera_use(camera_t *camera, uint32_t shader);
 
-int l_camera_create(lua_State *L);
+camera_t *check_camera(lua_State *L, uint32_t arg);
+
+int l_camera(lua_State *L);
+int l_camera_update(lua_State *L);
+int l_camera_resize(lua_State *L);
+int l_camera_move(lua_State *L);
+int l_camera_rotate(lua_State *L);
+int l_camera_use(lua_State *L);
+
+static const luaL_Reg camera_m[] = {
+    {"update", l_camera_update},
+    {"resize", l_camera_resize},
+    {"move", l_camera_move},
+    {"rotate", l_camera_rotate},
+    {"use", l_camera_use},
+    {NULL, NULL}
+};
 
 #endif

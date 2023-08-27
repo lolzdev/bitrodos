@@ -9,7 +9,7 @@
 #include <math/linear.h>
 #include <input.h>
 
-GLFWwindow *create_window(char *title, uint64_t width, uint64_t height);
+GLFWwindow *create_window(char *title, uint64_t width, uint64_t height, state_t *state);
 void update_window(GLFWwindow *window);
 void destroy_window(GLFWwindow *window);
 int should_close(GLFWwindow *window);

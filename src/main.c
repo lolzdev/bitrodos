@@ -5,10 +5,12 @@
 
 int main(void)
 {
-
-    GLFWwindow *window = create_window("bitrodos", 800, 600);
-
     state_t state = {0};
+
+    state.resize_hooks = (hook_node_t *) malloc(sizeof(hook_node_t)); 
+    state.resize_hooks->ref = LUA_NOREF;
+
+    GLFWwindow *window = create_window("bitrodos", 800, 600, &state);
 
     load_mods(&state);
 
@@ -20,15 +22,9 @@ int main(void)
         }
 
         lua_rawgeti(state.L, LUA_REGISTRYINDEX, hooks->ref);
-        if (lua_pcall(state.L, 0, 0, 0) != LUA_OK) error("A lua pre-init hook has thrown an error");
+        if (lua_pcall(state.L, 0, 0, 0) != LUA_OK) error("A lua pre-init hook has thrown an error: %s", lua_tostring(state.L, -1));
         hooks = hooks->next;
     }
-
-    //camera_t *camera = malloc(sizeof(camera_t));
-    //vec3 position = {0.0f, 0.0f, 2.0f};
-    //camera_create(camera, position, -90.0f, 0.0f);
-    //RENDER_STATE.camera = camera;
-    //mat4_perspective(RENDER_STATE.perspective, RAD(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     mesh_t triangle;
     float vertices[] = {
@@ -47,14 +43,28 @@ int main(void)
 
     state.meshes = meshes;
 
+    init_input(&state);
+
     while (!should_close(window)) {
+        hooks = state.tick_hooks;
+        while (hooks) {
+            if (hooks->ref == LUA_NOREF) {
+                hooks = hooks->next;
+                continue;
+            }
+
+            lua_rawgeti(state.L, LUA_REGISTRYINDEX, hooks->ref);
+            lua_pushnumber(state.L, state.delta_time);
+            if (lua_pcall(state.L, 1, 0, 0) != LUA_OK) error("A lua tick hook has thrown an error: %s", lua_tostring(state.L, -1));
+            hooks = hooks->next;
+        }
+
         render_loop(&state);
         update_window(window);
     }
 
     info("Exiting");
 
-    //free(camera);
     destroy_meshes(meshes);
     destroy_window(window);
     return EXIT_SUCCESS;

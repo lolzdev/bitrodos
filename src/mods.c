@@ -11,6 +11,15 @@ void load_mods(state_t *state)
     state->pre_init_hooks = (hook_node_t *) malloc(sizeof(hook_node_t)); 
     state->pre_init_hooks->ref = LUA_NOREF;
 
+    state->cursor_hooks = (hook_node_t *) malloc(sizeof(hook_node_t)); 
+    state->cursor_hooks->ref = LUA_NOREF;
+
+    state->key_hooks = (hook_node_t *) malloc(sizeof(hook_node_t)); 
+    state->key_hooks->ref = LUA_NOREF;
+
+    state->tick_hooks = (hook_node_t *) malloc(sizeof(hook_node_t)); 
+    state->tick_hooks->ref = LUA_NOREF;
+
     lua_State *L = luaL_newstate();
     state->L = L;
 
@@ -28,11 +37,30 @@ void load_mods(state_t *state)
     luaL_setfuncs(L, module_log, 0);
     lua_setglobal(L, "log");
 
+    lua_newtable(L);
+    luaL_setfuncs(L, module_input, 0);
+    lua_setglobal(L, "input");
+
     lua_register(L, "require", l_require);
 
     luaL_newmetatable(L, "Vec3");
     luaL_setfuncs(L, vec3_m, 0);
     lua_register(L, "Vec3", l_vec3);
+
+    luaL_newmetatable(L, "Camera");
+    lua_pushstring(L, "__index");
+    lua_pushvalue(L, -2);
+    lua_settable(L, -3);
+    luaL_setfuncs(L, camera_m, 0);
+    lua_register(L, "Camera", l_camera);
+
+    if (luaL_dofile(L, "lua/keys.lua")) {
+        error("error while loading core library: %s", lua_tostring(L, -1));
+    }
+
+    if (luaL_dofile(L, "lua/misc.lua")) {
+        error("error while loading core library: %s", lua_tostring(L, -1));
+    }
 
     struct dirent *entry = NULL;
     DIR *dp = NULL;
@@ -56,8 +84,9 @@ void load_mod(char *name, lua_State *L)
     char *path = (char *) malloc(path_len);
     sprintf(path, "mods/%s/lua/init.lua", name);
 
-
-    luaL_dofile(L, path);
+    if (luaL_dofile(L, path)) {
+        error("error while loading mod %s: %s", name, lua_tostring(L, -1));
+    }
 }
 
 int l_add_hook(lua_State *L)
@@ -101,6 +130,66 @@ int l_add_hook(lua_State *L)
             prev = head;
             head = head->next;
         }
+    } else if (strcmp(type, "cursor") == 0) {
+        hook_node_t *head = STATE->cursor_hooks;
+        hook_node_t *prev = head;
+        while(1) {
+            if (!head) {
+                head = (hook_node_t *) malloc(sizeof(hook_node_t));
+                head->ref = callback;
+                head->next = NULL;
+                prev->next = head;
+                break;
+            }
+
+            prev = head;
+            head = head->next;
+        }
+    } else if (strcmp(type, "key") == 0) {
+        hook_node_t *head = STATE->key_hooks;
+        hook_node_t *prev = head;
+        while(1) {
+            if (!head) {
+                head = (hook_node_t *) malloc(sizeof(hook_node_t));
+                head->ref = callback;
+                head->next = NULL;
+                prev->next = head;
+                break;
+            }
+
+            prev = head;
+            head = head->next;
+        }
+    } else if (strcmp(type, "tick") == 0) {
+        hook_node_t *head = STATE->tick_hooks;
+        hook_node_t *prev = head;
+        while(1) {
+            if (!head) {
+                head = (hook_node_t *) malloc(sizeof(hook_node_t));
+                head->ref = callback;
+                head->next = NULL;
+                prev->next = head;
+                break;
+            }
+
+            prev = head;
+            head = head->next;
+        }
+    } else if (strcmp(type, "resize") == 0) {
+        hook_node_t *head = STATE->resize_hooks;
+        hook_node_t *prev = head;
+        while(1) {
+            if (!head) {
+                head = (hook_node_t *) malloc(sizeof(hook_node_t));
+                head->ref = callback;
+                head->next = NULL;
+                prev->next = head;
+                break;
+            }
+
+            prev = head;
+            head = head->next;
+        }
     } else return luaL_error(L, "invalid hook type");
 
     return 0;
@@ -119,7 +208,9 @@ int l_require(lua_State *L)
     char *path = (char *) malloc(path_len);
     sprintf(path, "mods/%s/lua/%s.lua", namespace, script);
 
-    luaL_dofile(L, path);
+    if (luaL_dofile(L, path)) {
+        error("error while loading mod %s: %s", namespace, lua_tostring(L, -1));
+    }
 
     return 0;
 }

@@ -111,7 +111,79 @@ void camera_use(camera_t *camera, uint32_t shader)
     glUniformMatrix4fv(perspective_location, 1, 1, perspective[0]);
 }
 
-int l_camera_create(lua_State *L)
-{
-   return 0; 
+camera_t *check_camera(lua_State *L, uint32_t arg) {
+    void *ud = luaL_checkudata(L, arg, "Camera");
+    luaL_argcheck(L, ud != NULL, arg, "`Camera` expected");
+    return (camera_t *)ud;
 }
+
+int l_camera(lua_State *L)
+{
+    float *position = check_vec3(L, 1);
+    float yaw = (float) luaL_checknumber(L, 2);
+    float pitch = (float) luaL_checknumber(L, 3);
+
+    camera_t *c = (camera_t *) lua_newuserdata(L, sizeof(camera_t));
+
+    luaL_getmetatable(L, "Camera");
+    lua_setmetatable(L, -2);
+
+    camera_create(c, position, yaw, pitch);
+
+    return 1;
+}
+
+int l_camera_update(lua_State *L)
+{
+    camera_t *self = check_camera(L, 1);
+    camera_update(self);
+
+    return 0;
+}
+
+int l_camera_resize(lua_State *L)
+{
+    camera_t *self = check_camera(L, 1);
+
+    uint32_t width = luaL_checkinteger(L, 2);
+    uint32_t heigth = luaL_checkinteger(L, 3);
+    
+    camera_resize(self, width, heigth);
+
+    return 0;
+}
+
+int l_camera_move(lua_State *L)
+{
+    camera_t *self = check_camera(L, 1);
+
+    direction_t direction = (direction_t) luaL_checkinteger(L, 2);
+    float delta_time = (float) luaL_checknumber(L, 3);
+
+    camera_move(self, direction, delta_time);
+
+    return 0;
+}
+
+int l_camera_rotate(lua_State *L)
+{
+    camera_t *self = check_camera(L, 1);
+
+    float delta_x = (float) luaL_checknumber(L, 2);
+    float delta_y = (float) luaL_checknumber(L, 3);
+
+    camera_rotate(self, delta_x, delta_y);
+
+    return 0;
+}
+
+int l_camera_use(lua_State *L)
+{
+    camera_t *self = check_camera(L, 1);
+    uint32_t shader = luaL_checkinteger(L, 2);
+
+    camera_use(self, shader);
+
+    return 0;
+}
+

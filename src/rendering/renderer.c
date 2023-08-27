@@ -16,17 +16,12 @@ void render_loop(state_t *state)
         }
 
         lua_rawgeti(state->L, LUA_REGISTRYINDEX, hooks->ref);
-        if (lua_pcall(state->L, 0, 0, 0) != LUA_OK) error("A lua render hook has thrown an error");
+        lua_pushnumber(state->L, state->delta_time);
+        if (lua_pcall(state->L, 1, 0, 0) != LUA_OK) error("A lua render hook has thrown an error: %s", lua_tostring(state->L, -1));
         hooks = hooks->next;
     }
 
-    //uint32_t perspective_location = glGetUniformLocation(RENDER_STATE.shader, "perspective");
-    //uint32_t view_location = glGetUniformLocation(RENDER_STATE.shader, "view");
-    //glUniformMatrix4fv(perspective_location, 1, 1, RENDER_STATE.perspective[0]);
-    //mat4 view = {0};
-    //camera_view_matrix(RENDER_STATE.camera, view);
-    //glUniformMatrix4fv(view_location, 1, 1, view[0]);
-
+    
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

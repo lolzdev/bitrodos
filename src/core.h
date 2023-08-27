@@ -37,6 +37,10 @@ typedef struct camera_node {
 typedef struct state {
     hook_node_t *render_hooks;
     hook_node_t *pre_init_hooks;
+    hook_node_t *key_hooks;
+    hook_node_t *cursor_hooks;
+    hook_node_t *tick_hooks;
+    hook_node_t *resize_hooks;
 
     lua_State *L;
 
@@ -45,12 +49,12 @@ typedef struct state {
 } state_t;
 
 typedef enum direction {
-    NORTH, // -z
-    SOUTH, // +z
-    WEST, // -x
-    EAST, // +x
-    TOP, // +y
-    BOTTOM, // -y
+    NORTH = 0, // -z
+    SOUTH = 1, // +z
+    WEST = 2, // -x
+    EAST = 3, // +x
+    TOP = 4, // +y
+    BOTTOM = 5, // -y
 } direction_t;
 
 #endif

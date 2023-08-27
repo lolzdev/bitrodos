@@ -177,7 +177,7 @@ void vec4_scale(vec4 dest, vec4 a, float scale)
     for (int i=0; i<4; i++) dest[i] *= scale;
 }
 
-static float *check_vec3 (lua_State *L, uint32_t arg) {
+float *check_vec3 (lua_State *L, uint32_t arg) {
     void *ud = luaL_checkudata(L, arg, "Vec3");
     luaL_argcheck(L, ud != NULL, arg, "`Vec3` expected");
     return (float *)ud;

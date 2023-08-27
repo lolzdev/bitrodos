@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <rendering/renderer.h>
 #include <core.h>
+#include <input.h>
 
 int l_add_hook(lua_State *L);
 
@@ -30,6 +31,11 @@ static const luaL_Reg module_log[] = {
     {"info", l_info},
     {"warn", l_warn},
     {"error", l_error},
+    {NULL, NULL}
+};
+
+static const luaL_Reg module_input[] = {
+    {"is_key_down", l_is_key_down},
     {NULL, NULL}
 };
 

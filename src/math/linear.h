@@ -46,6 +46,8 @@ void vec4_scale(vec4 dest, vec4 a, float scale);
 void mat4_perspective(mat4 dest, float fov, float aspect, float near, float far);
 void mat4_lookat(mat4 dest, vec3 eye, vec3 target, vec3 up);
 
+float *check_vec3 (lua_State *L, uint32_t arg);
+
 int l_vec3(lua_State *L);
 int l_vec3_add(lua_State *L);
 int l_vec3_sub(lua_State *L);

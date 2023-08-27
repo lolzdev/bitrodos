@@ -1,14 +1,31 @@
 #include <window.h>
 
+static state_t *STATE;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     UNUSED(window);
     glViewport(0, 0, width, height);
-    //mat4_perspective(RENDER_STATE.perspective, RAD(45.0f), (float)width/(float)height, 0.1f, 100.0f);
+
+    hook_node_t *hooks = STATE->resize_hooks;
+    while (hooks) {
+        if (hooks->ref == LUA_NOREF) {
+            hooks = hooks->next;
+            continue;
+        }
+
+        lua_rawgeti(STATE->L, LUA_REGISTRYINDEX, hooks->ref);
+        lua_pushinteger(STATE->L, width);
+        lua_pushinteger(STATE->L, height);
+        if (lua_pcall(STATE->L, 2, 0, 0) != LUA_OK) error("A lua resize hook has thrown an error: %s", lua_tostring(STATE->L, -1));
+        hooks = hooks->next;
+    }
+
 }
 
-GLFWwindow *create_window(char *title, uint64_t width, uint64_t height)
+GLFWwindow *create_window(char *title, uint64_t width, uint64_t height, state_t *state)
 {
+    STATE = state;
     info("Initializing the main window");
     CRITICAL_ASSERT("Could not initialize GLFW!", glfwInit());
 
@@ -24,6 +41,7 @@ GLFWwindow *create_window(char *title, uint64_t width, uint64_t height)
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetKeyCallback(window, key_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     CRITICAL_ASSERT("Could not create the main window!", window);
