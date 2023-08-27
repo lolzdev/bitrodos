@@ -43,7 +43,7 @@ GLFWwindow *create_window(char *title, uint64_t width, uint64_t height, state_t 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetKeyCallback(window, key_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     CRITICAL_ASSERT("Could not create the main window!", window);
 
