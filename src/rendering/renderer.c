@@ -28,14 +28,15 @@ void render_loop(state_t *state)
     meshes_t *list = state->meshes;
 
     while (list) {
+        glBindTexture(GL_TEXTURE_2D, list->mesh->atlas);
         glBindVertexArray(list->mesh->vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
+        glDrawElements(GL_TRIANGLES, list->mesh->indices, GL_UNSIGNED_INT, 0); 
         glBindVertexArray(0);
         list = list->next;
     }
 }
 
-void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len)
+void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len, uint32_t atlas)
 {
     if (!mesh) {
         mesh = (mesh_t *) malloc(sizeof(mesh_t));
@@ -53,7 +54,12 @@ void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *i
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices_len, indices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    mesh->atlas = atlas;
+    mesh->indices = indices_len;
 }
 
 meshes_t *push_mesh(meshes_t *head, mesh_t mesh)

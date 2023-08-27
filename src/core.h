@@ -20,7 +20,8 @@ typedef struct {
 } block_atlas_pair;
 
 typedef struct mesh {
-    uint32_t vbo, vao, ebo;
+    uint32_t vbo, vao, ebo, atlas;
+    size_t indices;
 } mesh_t;
 
 typedef struct meshes {

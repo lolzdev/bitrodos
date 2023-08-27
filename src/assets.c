@@ -177,10 +177,11 @@ uint32_t create_block_atlas(const char *namespace, state_t *state)
     glBindTexture(GL_TEXTURE_2D, atlas_texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, atlas_width, atlas_width, 0, GL_RGBA8, GL_UNSIGNED_BYTE, atlas);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_width, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas);
     glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_write_png("atlas.png", atlas_width, atlas_width, 4, atlas, atlas_width * 4);
     stbi_image_free(atlas);
 
     state->atlas_count++;
@@ -211,4 +212,26 @@ void remove_extension(char *filename)
     }
 }
 
-uint32_t get_texture(char *id, float *uvs);
+uint32_t get_texture(char *namespace, char *name, float *uvs, state_t *state)
+{
+    if (uvs) {
+        size_t id_len = strlen(name) + strlen(namespace) + 2;
+        char *id = malloc(sizeof(char) * id_len);
+        sprintf(id, "%s:%s", namespace, name);
+
+        for (size_t i=0; i < state->texture_count; i++) {
+            if (state->block_textures[i].hash == hash((uint8_t *) id))
+                memcpy(uvs, state->block_textures[i].uvs, sizeof(float) * 8);
+        }
+
+        free(id);
+    }
+
+    for (size_t i=0; i < state->atlas_count; i++) {
+        if (state->block_atlases[i].hash == hash((uint8_t *) namespace))
+            return state->block_atlases[i].atlas;
+    }
+
+    return 0;
+}
+

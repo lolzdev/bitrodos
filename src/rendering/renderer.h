@@ -15,7 +15,7 @@
 #include <mods.h>
 #include <core.h>
 
-void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len);
+void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len, uint32_t atlas);
 meshes_t *push_mesh(meshes_t *head, mesh_t mesh);
 void destroy_meshes(meshes_t *head);
 mesh_t *get_mesh(meshes_t *head, uint32_t index);

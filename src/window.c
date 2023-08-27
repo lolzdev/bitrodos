@@ -57,7 +57,7 @@ GLFWwindow *create_window(char *title, uint64_t width, uint64_t height, state_t 
     glViewport(0, 0, width, height);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
     glEnable(GL_DEPTH_TEST);
 
     info("Window initialized");

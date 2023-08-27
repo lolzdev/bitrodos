@@ -18,6 +18,6 @@ uint32_t load_shader_program(const char *namespace, const char *vertex_name, con
 uint32_t create_block_atlas(const char *namespace, state_t *state);
 void remove_extension(char *filename);
 
-uint32_t get_texture(char *id, float *uvs);
+uint32_t get_texture(char *namespace, char* name, float *uvs, state_t *state);
 
 #endif
