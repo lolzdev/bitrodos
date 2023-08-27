@@ -8,7 +8,7 @@
 #include <log.h>
 
 char *read_file(char *filename);
-uint32_t load_shader_module(char *name, uint32_t type);
-uint32_t load_shader_program(char *vertex_name, char *fragment_name);
+uint32_t load_shader_module(const char *namespace, const char *name, uint32_t type);
+uint32_t load_shader_program(const char *namespace, const char *vertex_name, const char *fragment_name);
 
 #endif

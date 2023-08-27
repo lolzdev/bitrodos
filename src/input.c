@@ -24,7 +24,7 @@ void mouse_callback(GLFWwindow* window, double x_pos_in, double y_pos_in)
     last_x = x_pos;
     last_y = y_pos;
 
-    camera_rotate(RENDER_STATE.camera, x_offset, y_offset);
+    //camera_rotate(RENDER_STATE.camera, x_offset, y_offset);
 }
 
 void process_input(GLFWwindow *window)
@@ -32,12 +32,18 @@ void process_input(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 
+    /*
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera_move(RENDER_STATE.camera, NORTH, RENDER_STATE.delta_time);
+        camera_move(state->camera, NORTH, state->delta_time);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera_move(RENDER_STATE.camera, SOUTH, RENDER_STATE.delta_time);
+        camera_move(state->camera, SOUTH, state->delta_time);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera_move(RENDER_STATE.camera, WEST, RENDER_STATE.delta_time);
+        camera_move(state->camera, WEST, state->delta_time);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera_move(RENDER_STATE.camera, EAST, RENDER_STATE.delta_time);
+        camera_move(state->camera, EAST, state->delta_time);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera_move(state->camera, TOP, state->delta_time);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        camera_move(state->camera, BOTTOM, state->delta_time);
+        */
 }

@@ -21,11 +21,11 @@ char *read_file(char *filename)
     return buffer;
 }
 
-uint32_t load_shader_module(char *name, uint32_t type)
+uint32_t load_shader_module(const char *namespace, const char *name, uint32_t type)
 {
-    size_t path_len = strlen(name) + 16;
+    size_t path_len = strlen(name) + strlen(namespace) + 16;
     char *path = (char *) malloc(path_len);
-    sprintf(path, "assets/shaders/%s", name);
+    sprintf(path, "mods/%s/assets/shaders/%s", namespace, name);
     const char *source = read_file(path);
     uint32_t shader = 0;
 
@@ -48,10 +48,10 @@ uint32_t load_shader_module(char *name, uint32_t type)
     return shader;
 }
 
-uint32_t load_shader_program(char *vertex_name, char *fragment_name)
+uint32_t load_shader_program(const char *namespace, const char *vertex_name, const char *fragment_name)
 {
-    uint32_t vertex_module = load_shader_module(vertex_name, GL_VERTEX_SHADER);
-    uint32_t fragment_module = load_shader_module(fragment_name, GL_FRAGMENT_SHADER);
+    uint32_t vertex_module = load_shader_module(namespace, vertex_name, GL_VERTEX_SHADER);
+    uint32_t fragment_module = load_shader_module(namespace, fragment_name, GL_FRAGMENT_SHADER);
 
     uint32_t program = glCreateProgram();
     glAttachShader(program, vertex_module);

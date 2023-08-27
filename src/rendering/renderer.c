@@ -1,27 +1,36 @@
 #include <rendering/renderer.h>
 
-render_state_t RENDER_STATE;
 static float last_frame = 0.0f;
 
-void render_loop()
+void render_loop(state_t *state)
 {
     float current = (float) glfwGetTime();
-    RENDER_STATE.delta_time = current - last_frame;
+    state->delta_time = current - last_frame;
     last_frame = current;
 
-    glUseProgram(RENDER_STATE.shader);
+    hook_node_t *hooks = state->render_hooks;
+    while (hooks) {
+        if (hooks->ref == LUA_NOREF) {
+            hooks = hooks->next;
+            continue;
+        }
 
-    uint32_t perspective_location = glGetUniformLocation(RENDER_STATE.shader, "perspective");
-    uint32_t view_location = glGetUniformLocation(RENDER_STATE.shader, "view");
-    glUniformMatrix4fv(perspective_location, 1, 1, RENDER_STATE.perspective[0]);
-    mat4 view = {0};
-    camera_view_matrix(RENDER_STATE.camera, view);
-    glUniformMatrix4fv(view_location, 1, 1, view[0]);
+        lua_rawgeti(state->L, LUA_REGISTRYINDEX, hooks->ref);
+        if (lua_pcall(state->L, 0, 0, 0) != LUA_OK) error("A lua render hook has thrown an error");
+        hooks = hooks->next;
+    }
+
+    //uint32_t perspective_location = glGetUniformLocation(RENDER_STATE.shader, "perspective");
+    //uint32_t view_location = glGetUniformLocation(RENDER_STATE.shader, "view");
+    //glUniformMatrix4fv(perspective_location, 1, 1, RENDER_STATE.perspective[0]);
+    //mat4 view = {0};
+    //camera_view_matrix(RENDER_STATE.camera, view);
+    //glUniformMatrix4fv(view_location, 1, 1, view[0]);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    meshes_t *list = RENDER_STATE.meshes;
+    meshes_t *list = state->meshes;
 
     while (list) {
         glBindVertexArray(list->mesh->vao);
@@ -29,7 +38,6 @@ void render_loop()
         glBindVertexArray(0);
         list = list->next;
     }
-
 }
 
 void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len)
@@ -58,6 +66,7 @@ meshes_t *push_mesh(meshes_t *head, mesh_t mesh)
     if (!head) {
        head = (meshes_t *) malloc(sizeof(meshes_t)); 
        head->mesh = (mesh_t *) malloc(sizeof(mesh_t));
+       head->next = NULL;
        memcpy(head->mesh, &mesh, sizeof(mesh_t));
     } else {
         while (head) {
@@ -65,6 +74,7 @@ meshes_t *push_mesh(meshes_t *head, mesh_t mesh)
         }
 
         head->mesh = (mesh_t *) malloc(sizeof(mesh_t));
+        head->next = NULL;
         memcpy(head->mesh, &mesh, sizeof(mesh_t));
     }
 

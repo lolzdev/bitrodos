@@ -67,7 +67,13 @@ void camera_move(camera_t *camera, direction_t direction, float delta_time)
             vec3_scale(res, camera->right, velocity);
             vec3_add(camera->position, camera->position, res);
             break;
-        default:
+        case TOP:
+            vec3_scale(res, camera->up, velocity);
+            vec3_add(camera->position, camera->position, res);
+            break;
+        case BOTTOM:
+            vec3_scale(res, camera->up, velocity);
+            vec3_sub(camera->position, camera->position, res);
             break;
     };
 }
