@@ -30,6 +30,10 @@ void load_mods(state_t *state)
 
     lua_register(L, "require", l_require);
 
+    luaL_newmetatable(L, "Vec3");
+    luaL_setfuncs(L, vec3_m, 0);
+    lua_register(L, "Vec3", l_vec3);
+
     struct dirent *entry = NULL;
     DIR *dp = NULL;
     

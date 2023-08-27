@@ -176,3 +176,182 @@ void vec4_scale(vec4 dest, vec4 a, float scale)
     memcpy(dest, a, sizeof(vec4));
     for (int i=0; i<4; i++) dest[i] *= scale;
 }
+
+static float *check_vec3 (lua_State *L, uint32_t arg) {
+    void *ud = luaL_checkudata(L, arg, "Vec3");
+    luaL_argcheck(L, ud != NULL, arg, "`Vec3` expected");
+    return (float *)ud;
+}
+
+int l_vec3(lua_State *L)
+{
+    double x = luaL_checknumber(L, 1);
+    double y = luaL_checknumber(L, 2);
+    double z = luaL_checknumber(L, 3);
+
+    float *v = (float *) lua_newuserdata(L, sizeof(vec3));
+
+    luaL_getmetatable(L, "Vec3");
+    lua_setmetatable(L, -2);
+
+    v[0] = (float)x;
+    v[1] = (float)y;
+    v[2] = (float)z;
+
+    return 1;
+}
+
+int l_vec3_add(lua_State *L)
+{
+    float *self = check_vec3(L, 1); 
+    float *other = check_vec3(L, 2); 
+
+    float *v = (float *) lua_newuserdata(L, sizeof(vec3));
+
+    luaL_getmetatable(L, "Vec3");
+    lua_setmetatable(L, -2);
+
+    v[0] = self[0] + other[0];
+    v[1] = self[1] + other[1];
+    v[2] = self[2] + other[2]; 
+
+    return 1;
+}
+
+int l_vec3_sub(lua_State *L)
+{
+    float *self = check_vec3(L, 1); 
+    float *other = check_vec3(L, 2); 
+
+    float *v = (float *) lua_newuserdata(L, sizeof(vec3));
+
+    luaL_getmetatable(L, "Vec3");
+    lua_setmetatable(L, -2);
+
+    v[0] = self[0] - other[0];
+    v[1] = self[1] - other[1];
+    v[2] = self[2] - other[2]; 
+
+    return 1;
+}
+
+int l_vec3_equal(lua_State *L)
+{
+    float *self = check_vec3(L, 1);
+    float *other = check_vec3(L, 2);
+
+    lua_pushboolean(L, self[0] == other[0] && self[1] == other[1] && self[2] == self[2]);
+
+    return 1;
+}
+
+int l_vec3_negate(lua_State *L)
+{
+    float *self = check_vec3(L, 1);
+
+    float *v = (float *) lua_newuserdata(L, sizeof(vec3));
+
+    luaL_getmetatable(L, "Vec3");
+    lua_setmetatable(L, -2);
+
+    v[0] = -self[0];
+    v[1] = -self[1];
+    v[2] = -self[2]; 
+
+    return 1;
+}
+
+int l_vec3_mul(lua_State *L)
+{
+    float *self = check_vec3(L, 1);
+
+
+    if (lua_type(L, 2) == LUA_TUSERDATA) {
+        float *other = check_vec3(L, 2);
+        float result = 0.0f;
+        for (int i=0; i<3; i++) {
+            result += self[i] * ((float *)other)[i];
+        }
+        lua_pushnumber(L, result);
+        return 1;
+    } else {
+        float n = (float) luaL_checknumber(L, 2);
+        float *v = (float *) lua_newuserdata(L, sizeof(vec3));
+
+        luaL_getmetatable(L, "Vec3");
+        lua_setmetatable(L, -2);
+
+        v[0] = self[0] * n;
+        v[1] = self[1] * n;
+        v[2] = self[2] * n; 
+
+        return 1;    
+    }
+
+    return luaL_error(L, "expected `Vec3` or `number` as parameter #1"); 
+}
+
+int l_vec3_div(lua_State *L)
+{
+    float *self = check_vec3(L, 1); 
+
+    float n = (float) luaL_checknumber(L, 1);
+
+    float *v = (float *) lua_newuserdata(L, sizeof(vec3));
+
+    luaL_getmetatable(L, "Vec3");
+    lua_setmetatable(L, -2);
+
+
+    v[0] = self[0] / n;
+    v[1] = self[1] / n;
+    v[2] = self[2] / n; 
+
+    return 1;
+}
+
+int l_vec3_tostring(lua_State *L)
+{
+    float *self = check_vec3(L, 1); 
+    lua_pushfstring(L, "(%f, %f, %f)", self[0], self[1], self[2]);
+    return 1;
+}
+
+int l_vec3_index(lua_State *L)
+{
+    float *self = check_vec3(L, 1);
+    const char* index = luaL_checkstring(L, 2);
+    
+    if (strcmp(index, "x") == 0) {
+        lua_pushnumber(L, self[0]);
+        return 1;
+    } else if (strcmp(index, "y") == 0) {
+        lua_pushnumber(L, self[1]);
+        return 1;
+    } else if (strcmp(index, "z") == 0) {
+        lua_pushnumber(L, self[2]);
+        return 1;
+    }
+
+    return luaL_error(L, "invalid member for `Vec3`");
+}
+
+int l_vec3_newindex(lua_State *L)
+{
+    float *self = check_vec3(L, 1);
+    const char* index = luaL_checkstring(L, 2);
+    float n = (float) luaL_checknumber(L, 3);
+    
+    if (strcmp(index, "x") == 0) {
+        self[0] = n;
+        return 0;
+    } else if (strcmp(index, "y") == 0) {
+        self[1] = n;
+        return 0;
+    } else if (strcmp(index, "z") == 0) {
+        self[2] = n;
+        return 0;
+    }
+
+    return luaL_error(L, "invalid member for `Vec3`");
+}
