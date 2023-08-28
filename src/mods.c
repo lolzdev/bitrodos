@@ -62,6 +62,8 @@ void load_mods(state_t *state)
         error("error while loading core library: %s", lua_tostring(L, -1));
     }
 
+    load_textures(state);
+
     struct dirent *entry = NULL;
     DIR *dp = NULL;
     
@@ -81,8 +83,6 @@ void load_mods(state_t *state)
 void load_mod(char *name, lua_State *L)
 {
     info("Loading mod %s", name);
-
-    create_block_atlas(name, STATE);
 
     size_t path_len = strlen(name) + 19;
     char *path = (char *) malloc(path_len);

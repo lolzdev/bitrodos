@@ -15,11 +15,12 @@
 #include <mods.h>
 #include <core.h>
 
-void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len, uint32_t atlas);
+void create_mesh(mesh_t *mesh, uint32_t *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len);
 meshes_t *push_mesh(meshes_t *head, mesh_t mesh);
 void destroy_meshes(meshes_t *head);
 mesh_t *get_mesh(meshes_t *head, uint32_t index);
 void remove_mesh(meshes_t *head, uint32_t index);
 void render_loop(state_t *state);
+uint32_t encode_vertex(uint32_t x, uint32_t y, uint32_t z, uint32_t atlas, uint32_t index);
 
 #endif

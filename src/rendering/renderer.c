@@ -28,7 +28,8 @@ void render_loop(state_t *state)
     meshes_t *list = state->meshes;
 
     while (list) {
-        glBindTexture(GL_TEXTURE_2D, list->mesh->atlas);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, state->texture_array);
         glBindVertexArray(list->mesh->vao);
         glDrawElements(GL_TRIANGLES, list->mesh->indices, GL_UNSIGNED_INT, 0); 
         glBindVertexArray(0);
@@ -36,7 +37,7 @@ void render_loop(state_t *state)
     }
 }
 
-void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len, uint32_t atlas)
+void create_mesh(mesh_t *mesh, uint32_t *vertices, size_t vertices_len, uint32_t *indices, size_t indices_len)
 {
     if (!mesh) {
         mesh = (mesh_t *) malloc(sizeof(mesh_t));
@@ -48,17 +49,14 @@ void create_mesh(mesh_t *mesh, float *vertices, size_t vertices_len, uint32_t *i
 
     glBindVertexArray(mesh->vao);
     glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices_len, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(uint32_t) * vertices_len, vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices_len, indices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void*)0);
 
-    mesh->atlas = atlas;
     mesh->indices = indices_len;
 }
 
@@ -123,4 +121,9 @@ void remove_mesh(meshes_t *head, uint32_t index)
     tmp = head;
     prev->next = head->next;
     free(tmp);
+}
+
+uint32_t encode_vertex(uint32_t x, uint32_t y, uint32_t z, uint32_t atlas, uint32_t index)
+{
+    return ((x & 0xF) << 28) | ((z & 0xF) << 24) | ((y & 0xFF) << 16) | ((atlas & 0xFF) << 8) | (index & 0xFF);
 }

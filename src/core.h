@@ -11,7 +11,7 @@
 
 typedef struct {
     uint64_t hash;
-    float *uvs; 
+    uint32_t uvs; 
 } block_texture_pair;
 
 typedef struct {
@@ -20,7 +20,7 @@ typedef struct {
 } block_atlas_pair;
 
 typedef struct mesh {
-    uint32_t vbo, vao, ebo, atlas;
+    uint32_t vbo, vao, ebo;
     size_t indices;
 } mesh_t;
 
@@ -60,6 +60,7 @@ typedef struct state {
 
     meshes_t *meshes;
     size_t texture_count, atlas_count;
+    uint32_t texture_array;
     float delta_time;
 } state_t;
 

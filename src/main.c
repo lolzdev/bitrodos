@@ -28,15 +28,15 @@ int main(void)
         hooks = hooks->next;
     }
 
-    float uvs[8];
-    uint32_t atlas = get_texture("bitrodos", "dirt", uvs, &state); 
+    uint32_t uvs = 0;
+    uint32_t atlas = get_texture("bitrodos", "dirt", &uvs, &state); 
 
     mesh_t triangle;
-    float vertices[] = {
-        0.5f,  0.5f, 0.0f, uvs[0], uvs[1],
-        0.5f, -0.5f, 0.0f, uvs[2], uvs[3],
-        -0.5f, -0.5f, 0.0f, uvs[4], uvs[5],
-        -0.5f, 0.5f, 0.0f, uvs[6], uvs[7]
+    uint32_t vertices[] = {
+        encode_vertex(1, 1, 0, atlas, uvs),
+        encode_vertex(1, 0, 0, atlas, uvs),
+        encode_vertex(0, 0, 0, atlas, uvs),
+        encode_vertex(0, 1, 0, atlas, uvs),
     };
 
     uint32_t indices[] = {
@@ -44,7 +44,7 @@ int main(void)
         1, 2, 3
     };
 
-    create_mesh(&triangle, vertices, 20, indices, 6, atlas);
+    create_mesh(&triangle, vertices, 4, indices, 6);
     meshes_t *meshes = NULL;
     meshes = push_mesh(meshes, triangle);
 

@@ -74,7 +74,7 @@ uint32_t load_shader_program(const char *namespace, const char *vertex_name, con
     return program;
 }
 
-uint32_t create_block_atlas(const char *namespace, state_t *state)
+void create_block_atlas(const char *namespace, uint32_t current_tex, state_t *state)
 {
     size_t path_len = strlen(namespace) + 30;
     char *path = (char *) malloc(path_len);
@@ -106,6 +106,7 @@ uint32_t create_block_atlas(const char *namespace, state_t *state)
 
     dp = opendir(path);
     if (dp != NULL) {
+        uint32_t current_id = 0;
         while ((entry = readdir(dp))) {
             if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
                 free(path);
@@ -120,29 +121,16 @@ uint32_t create_block_atlas(const char *namespace, state_t *state)
                     atlas = realloc(atlas, sizeof(char) * 4 * width * width * 256);
                     atlas_width = width * 16;
                     memset(atlas, 0, sizeof(char) * 4 * width * width * 256);
-                }
-
-                float *uvs = malloc(sizeof(float) * 8);
-                uvs[0] = (float)(atlas_x + width) / (float) atlas_width;
-                uvs[1] = (float)(atlas_y) / (float) atlas_width;
-
-                uvs[2] = (float)(atlas_x + width) / (float) atlas_width;
-                uvs[3] = (float)(atlas_y + height) / (float) atlas_width;
-
-                uvs[4] = (float)(atlas_x) / (float) atlas_width;
-                uvs[5] = (float)(atlas_y) / (float) atlas_width;
-
-                uvs[6] = (float)(atlas_x) / (float) atlas_width;
-                uvs[7] = (float)(atlas_y + height) / (float) atlas_width;
+                } 
 
                 remove_extension(entry->d_name);
                 for (size_t i=0; i < state->texture_count; i++) {
-                    if (!state->block_textures[i].uvs) {
+                    if (!state->block_textures[i].hash) {
                         size_t id_len = strlen(entry->d_name) + strlen(namespace) + 2;
                         char *id = malloc(sizeof(char) * id_len);
                         sprintf(id, "%s:%s", namespace, entry->d_name);
                         state->block_textures[i].hash = hash((uint8_t *)id);
-                        state->block_textures[i].uvs = uvs;
+                        state->block_textures[i].uvs = current_id;
                         free(id);
                     }
                 }
@@ -166,22 +154,17 @@ uint32_t create_block_atlas(const char *namespace, state_t *state)
                 }
 
                 stbi_image_free(data);
+                current_id++;
             }
         }
     }
 
     closedir(dp);
 
-    uint32_t atlas_texture;
-    glGenTextures(1, &atlas_texture);
-    glBindTexture(GL_TEXTURE_2D, atlas_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_width, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_write_png("atlas.png", atlas_width, atlas_width, 4, atlas, atlas_width * 4);
+    uint32_t atlas_texture = current_tex;
+    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, current_tex, atlas_width, atlas_width, 1, GL_RGBA, GL_UNSIGNED_BYTE, atlas);
+
+    current_tex++;
     stbi_image_free(atlas);
 
     state->atlas_count++;
@@ -195,8 +178,6 @@ uint32_t create_block_atlas(const char *namespace, state_t *state)
     state->block_atlases[state->atlas_count-1].atlas = atlas_texture;
 
     free(path);
-
-    return atlas_texture;
 }
 
 void remove_extension(char *filename)
@@ -212,7 +193,7 @@ void remove_extension(char *filename)
     }
 }
 
-uint32_t get_texture(char *namespace, char *name, float *uvs, state_t *state)
+uint32_t get_texture(char *namespace, char *name, uint32_t *uvs, state_t *state)
 {
     if (uvs) {
         size_t id_len = strlen(name) + strlen(namespace) + 2;
@@ -221,7 +202,7 @@ uint32_t get_texture(char *namespace, char *name, float *uvs, state_t *state)
 
         for (size_t i=0; i < state->texture_count; i++) {
             if (state->block_textures[i].hash == hash((uint8_t *) id))
-                memcpy(uvs, state->block_textures[i].uvs, sizeof(float) * 8);
+                *uvs = state->block_textures[i].uvs;
         }
 
         free(id);
@@ -235,3 +216,44 @@ uint32_t get_texture(char *namespace, char *name, float *uvs, state_t *state)
     return 0;
 }
 
+void load_textures(state_t *state)
+{
+    uint32_t mods = 0;
+    struct dirent *entry = NULL;
+    DIR *dp = NULL;
+    
+    dp = opendir("mods");
+    if (dp != NULL) {
+        while ((entry = readdir(dp))) {
+            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) mods++;
+        }
+    }
+
+    closedir(dp);
+
+    uint32_t current_tex = 0;
+    uint32_t array_texture;
+    glGenTextures(1, &array_texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, array_texture);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 256, 256, mods);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    dp = opendir("mods");
+    if (dp != NULL) {
+        while ((entry = readdir(dp))) {
+            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+                create_block_atlas(entry->d_name, current_tex, state);
+            }
+        }
+    }
+
+    closedir(dp);
+
+	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+
+    state->texture_array = array_texture;
+}
