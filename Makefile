@@ -11,9 +11,11 @@ SRC:=src/main.c \
 	 src/input.c \
 	 src/hash.c \
 	 src/mods.c \
+	 src/registry.c \
 	 src/math/linear.c \
 	 src/rendering/renderer.c \
-	 src/rendering/lua.c
+	 src/rendering/lua.c \
+	 src/rendering/text.c \
 
 OBJ:=$(SRC:.c=.o)
 OBJ_TEST:=$(OBJ:src/main.o=)

@@ -1,10 +1,13 @@
 #include <mods.h>
+#include <rendering/text.h>
 #include <stdlib.h>
 #include <window.h>
 #include <rendering/renderer.h>
 
 int main(void)
 {
+    load_ft();
+
     state_t state = {0};
     state.texture_count = 0;
     state.atlas_count = 0;
@@ -14,6 +17,8 @@ int main(void)
 
     GLFWwindow *window = create_window("bitrodos", 800, 600, &state);
 
+
+    init_registries(&state);
     load_mods(&state);
 
     hook_node_t *hooks = state.pre_init_hooks;

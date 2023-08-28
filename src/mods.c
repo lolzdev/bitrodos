@@ -41,6 +41,10 @@ void load_mods(state_t *state)
     luaL_setfuncs(L, module_input, 0);
     lua_setglobal(L, "input");
 
+    lua_newtable(L);
+    luaL_setfuncs(L, module_registry, 0);
+    lua_setglobal(L, "registry");
+
     lua_register(L, "require", l_require);
 
     luaL_newmetatable(L, "Vec3");
@@ -78,6 +82,8 @@ void load_mods(state_t *state)
     closedir(dp);
 
     info("Loaded %d textures", state->texture_count);
+    info("Registered %d blocks", state->block_registry_size);
+    info("Registered %d fonts", state->font_registry_size);
 }
 
 void load_mod(char *name, lua_State *L)

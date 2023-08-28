@@ -19,6 +19,21 @@ typedef struct {
     uint32_t atlas;
 } block_atlas_pair;
 
+typedef struct {
+    uint64_t hash;
+    uint32_t id;
+    uint64_t *textures;
+} block_metadata_pair;
+
+typedef struct {
+    uint32_t texture, width, height, delta_x, delta_y, advance;
+} char_metadata_pair;
+
+typedef struct {
+    uint64_t hash;
+    char_metadata_pair chars[128];
+} font_metadata_pair;
+
 typedef struct mesh {
     uint32_t vbo, vao, ebo;
     size_t indices;
@@ -55,6 +70,11 @@ typedef struct state {
 
     block_texture_pair *block_textures;
     block_atlas_pair *block_atlases;
+
+    block_metadata_pair *block_registry;
+    size_t block_registry_size;
+    font_metadata_pair *font_registry;
+    size_t font_registry_size;
 
     lua_State *L;
 

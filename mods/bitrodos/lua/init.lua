@@ -1,5 +1,34 @@
 require("bitrodos", "rendering")
 
+registry.register_block("bitrodos", "dirt", {
+    "bitrodos:dirt",
+    "bitrodos:dirt",
+    "bitrodos:dirt",
+    "bitrodos:dirt",
+    "bitrodos:dirt",
+    "bitrodos:dirt"
+})
+
+registry.register_block("bitrodos", "stone", {
+    "bitrodos:stone",
+    "bitrodos:stone",
+    "bitrodos:stone",
+    "bitrodos:stone",
+    "bitrodos:stone",
+    "bitrodos:stone"
+})
+
+registry.register_block("bitrodos", "grass", {
+    "bitrodos:grass_side",
+    "bitrodos:grass_side",
+    "bitrodos:grass_side",
+    "bitrodos:grass_side",
+    "bitrodos:grass_top",
+    "bitrodos:dirt"
+})
+
+registry.register_font("bitrodos", "font")
+
 system.add_hook("tick", function(delta_time)
     if input.is_key_down(Keys.W) then
         CAMERA:move(Direction.NORTH, delta_time)
